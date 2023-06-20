@@ -17,14 +17,9 @@ public class SnakeSegment : MonoBehaviour
         _pos = pos;
         _index = index;
 
-        Move(_pos);
-    }
-
-    void Move(GridPosition pos)
-    {
         _trans.position = new Vector3(pos.x, pos.y, 0.0f);
     }
-
+    
     void Awake()
     {
         _trans = GetComponent<Transform>();
