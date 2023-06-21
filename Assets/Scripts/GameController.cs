@@ -9,26 +9,25 @@ public class GameController : MonoBehaviour
     [SerializeField] private int startLength;
     [SerializeField] private Direction startDir;
     [SerializeField] private int fpsTarget;
+    [SerializeField] private float tilesPerSecond;
+    [SerializeField] private bool started;
 
     [SerializeField] private Snake snakePrefab;
 
     private GridManager grid;
     private Snake snake;
+    private float clock;                                        // move clock
+    private float moveProgress;                                 // (0, 1) - progress until next move step
 
-    public void Awake()
+    public int GetLevelX() { return levelX; }
+    public int GetLevelY() { return levelY; }
+
+    void Awake()
     {
         Application.targetFrameRate = fpsTarget;
         grid = GameObject.FindGameObjectWithTag("GridManager").GetComponent<GridManager>();
-    }
-
-    public int GetLevelX()
-    {
-        return levelX;
-    }
-
-    public int GetLevelY()
-    {
-        return levelY;
+        started = false;
+        moveProgress = 0.0f;
     }
 
     void Start()
@@ -37,5 +36,7 @@ public class GameController : MonoBehaviour
         snakeObject.name = "Snake";
         snake = snakeObject.GetComponent<Snake>();
         snake.Init(new GridPosition(startX, startY, startDir), startLength);
+
+        clock = 0.0f;
     }
 }

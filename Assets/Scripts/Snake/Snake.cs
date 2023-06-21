@@ -19,10 +19,7 @@ public class Snake : MonoBehaviour
         snakeLength = 1;
         
         // grow potentially several times depending on start config
-        for (int segmentsLeft = startLength - 1; segmentsLeft > 0; --segmentsLeft)
-        {
-            Grow();
-        }
+        for (int segmentsLeft = startLength - 1; segmentsLeft > 0; --segmentsLeft) Grow();
     }
 
     void Grow()
