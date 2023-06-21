@@ -16,6 +16,7 @@ public class SnakeSegment : MonoBehaviour
 {
     public SnakeSegment next, prev;
     public Vector2 pos, dir;
+    public float angle;
     public int index;
     public SegmentType segmentType;
 
@@ -32,6 +33,7 @@ public class SnakeSegment : MonoBehaviour
         this.pos = pos;
         this.dir = dir;
         this.index = index;
+        angle = 0.0f;
 
         _trans.position = new Vector3(pos.x, pos.y, 0.0f);
     }
@@ -44,21 +46,27 @@ public class SnakeSegment : MonoBehaviour
         dir = direction;
         pos += direction;
         _trans.position = new Vector3(pos.x, pos.y, 0.0f);
+        angle += Vector2.SignedAngle(lastDir, direction);
+        Debug.Log("angle changed to " + angle);
         return lastDir;
     }
 
     // adjust the sprite relative to the segment to smoothly interpolate 
-    // between grid positions given a direction and a lerp value and direction
+    // between grid positions given a direction and lerp value
     // returns the direction the segment was facing before moving
     public Vector2 Interpolate(Vector2 direction, float t)
     {
         // reset animation on corner sprites
         if (segmentType == SegmentType.Turn) t = 0;
-        // clamp the interpolation to not move beyond a full unit
-        float terpValue = Mathf.Min(t, 1);
         // scale direction by lerp value and adjust sprite transform relative to parent segment
         Vector2 animAnchor = direction * t;
         _spriteContainer.transform.localPosition = new Vector3(animAnchor.x, animAnchor.y, 0.0f);
+        // interpolate rotation if the segment is turning
+        if (direction != dir)
+        {
+            float theta = Vector2.SignedAngle(direction, dir) * t;
+            _spriteContainer.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, angle + theta);
+        }
         return dir;
     }
 
@@ -66,7 +74,7 @@ public class SnakeSegment : MonoBehaviour
     {
         // no orphaned segments allowed
         Assert.IsTrue(next != null || prev != null);
-        // copy the type of the current type to check if it changed
+        // copy the type of the current segment to check if it changed later
         SegmentType currType = segmentType;
         
         // determine the correct segment type based on neighboring segments

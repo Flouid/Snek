@@ -10,7 +10,6 @@ public class PlayerInputController : MonoBehaviour
     public static string eastKey = "d";
 
     public Vector2 queuedInput;
-    public Vector2 lastFrame;
 
     private Snake _snake;
     private GameController _game;
@@ -30,12 +29,10 @@ public class PlayerInputController : MonoBehaviour
     {
         // if the game hasn't started and the player queues an input, start the game
         if (!_game.isPlaying() && queuedInput != Vector2.zero) _game.StartGame();
-
+        // change queued input based on user input and restrictions from the currently executing action
         if (Input.GetKeyDown(northKey) && _snake.CurrentInput() != Vector2.down) queuedInput = Vector2.up;
         if (Input.GetKeyDown(westKey) && _snake.CurrentInput() != Vector2.right) queuedInput = Vector2.left;
         if (Input.GetKeyDown(southKey) && _snake.CurrentInput() != Vector2.up) queuedInput = Vector2.down;
         if (Input.GetKeyDown(eastKey) && _snake.CurrentInput() != Vector2.left) queuedInput = Vector2.right;
-
-        if (lastFrame != queuedInput) Debug.Log("registered input: " + queuedInput);
     }
 }

@@ -30,6 +30,7 @@ public class Snake : MonoBehaviour
     }
 
     public Vector2 CurrentInput() { return _currInput; }
+    public void SampleInput() { _currInput = _inputController.queuedInput; }
 
     public void Grow()
     {
@@ -60,20 +61,22 @@ public class Snake : MonoBehaviour
         _clock += Time.deltaTime;
         // duration between move steps, one unit at a time
         float timeToMoveStep = 1 / _snakeSpeed;
-        // (0, 1) interval representing how far through the move step it currently is
+        // (0, 1] interval representing how far through the move step it currently is
         float moveProgress = _clock * _snakeSpeed;
-        // interpolate the sprites forward based on direction and progress until next step
-        Animate(moveProgress);
 
-        if (_clock >= timeToMoveStep)
+        // if the move has finished, reset the clock and perform a movestep
+        if (moveProgress > 1.0f)
         {
+            _clock = 0.0f;
             MoveStep();
+            Animate(0);
         }
+        // otherwise, animate the sprites using the partial progress to interpolate
+        else Animate(moveProgress);
     }
 
     void MoveStep()
     {
-        _clock = 0.0f;
         Vector2 tempDir = _currInput;
 
         // walk down the snake
@@ -81,17 +84,14 @@ public class Snake : MonoBehaviour
         {
             // move the segment and propagate it's direction to the next one
             tempDir = curr.Move(tempDir);
+
             // trail sprite update behind move update by an extra segment
             // this is so that both neighbors of the updating segment have already moved
             // misses the head but that should never need to update anyway
             if (curr == _head) continue;
             curr.next.UpdateSprite();
         }
-
-        // reset the interpolation on all of the sprites
-        Animate(0);
-        // get the input for the next step 
-        _currInput = _inputController.queuedInput;
+        SampleInput();
     }
 
     void Animate(float t)
@@ -101,10 +101,12 @@ public class Snake : MonoBehaviour
         // walk down the snake
         for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
         {
+            // animate the sprite and propagate it's direction to the next one
             tempDir = curr.Interpolate(tempDir, t);
         }
     }
 
+    // factory method for segments
     SnakeSegment CreateSegment(SnakeSegment next, SnakeSegment prev, Vector2 startPos, Vector2 startDir, int index)
     {
         // instantiate a new segment
@@ -117,12 +119,11 @@ public class Snake : MonoBehaviour
         return newSegment;
     }
 
-    [ContextMenu("log directions")]
-    void LogDir()
+    // takes two Vectr2s and returns the angle from 0 to 360 degrees
+    float ClampedAngle(Vector2 a, Vector2 b)
     {
-        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
-        {
-            Debug.Log("segment " + curr.index + " has direction " + curr.dir);
-        }
+        float ang = Vector2.SignedAngle(a, b);
+        if (ang < 0) ang += 360;
+        return ang;
     }
 }
