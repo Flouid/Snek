@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 427743037}
   m_Layer: 0
   m_Name: GridManager
-  m_TagString: Untagged
+  m_TagString: GridManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -302,7 +302,9 @@ MonoBehaviour:
   foodX: 12
   foodY: 7
   startLength: 2
+  startDir: 1
   fpsTarget: 60
+  snakePrefab: {fileID: 5939091014051108409, guid: a65c821e58798b14691c143eb07436bb, type: 3}
 --- !u!4 &534314205
 Transform:
   m_ObjectHideFlags: 0

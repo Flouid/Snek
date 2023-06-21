@@ -45,6 +45,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ea8c27b61b308f4f845964f74fa0884, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _next: {fileID: 0}
+  _prev: {fileID: 0}
+  _index: 0
+  head: {fileID: 21300000, guid: 4a40441d5726e944f97ad36bf3a66307, type: 3}
+  body: {fileID: 21300000, guid: 3627efa04605cef40973c1803253cd9f, type: 3}
+  turn: {fileID: 21300000, guid: 52b1512258648a244935d5d0ff549982, type: 3}
+  tail: {fileID: 21300000, guid: a17d4a7f316966e458f444bd89ae51de, type: 3}
 --- !u!212 &5480120870240155506
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -86,7 +93,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: d0084dc1c720c964ca2d415fa7507a09, type: 3}
+  m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -94,6 +101,6 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0

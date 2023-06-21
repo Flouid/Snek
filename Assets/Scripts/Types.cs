@@ -31,4 +31,9 @@ public class GridPosition
         }
         return this;
     }
+
+    public static bool InALine(GridPosition a, GridPosition b)
+    {
+        return (a.x == b.x || a.y == b.y);
+    }
 }
