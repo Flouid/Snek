@@ -27,6 +27,19 @@ public class Snake : MonoBehaviour
         _snakeSpeed = snakeSpeed;
     }
 
+    public void Grow()
+    {
+        // spawn the new segment in the correct location
+        Vector2 newPos = _tail.pos - _tail.dir;
+        SnakeSegment newSegment = CreateSegment(_tail, null, newPos, _tail.dir, _snakeLength);
+        // adjust the references to neighboring segments
+        _tail.prev = newSegment;
+        newSegment.next = _tail;
+        _tail = newSegment;
+        // track change to length
+        ++_snakeLength;
+    }
+
     void Awake()
     {
         _game = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -41,7 +54,12 @@ public class Snake : MonoBehaviour
     void Update()
     {
         _clock += Time.deltaTime;
+        // duration between move steps, one unit at a time
         float timeToMoveStep = 1 / _snakeSpeed;
+        // (0, 1) interval representing how far through the move step it currently is
+        float moveProgress = _clock * _snakeSpeed;
+        // interpolate the sprites forward based on direction and progress until next step
+        Animate(moveProgress);
 
         if (_clock >= timeToMoveStep)
         {
@@ -51,30 +69,31 @@ public class Snake : MonoBehaviour
 
     void MoveStep()
     {
-        Debug.Log("executing move step");
-
         _clock = 0.0f;
-        _head.dir = _inputController.queuedInput;
-        Vector2 currDir, nextDir;
+        Vector2 nextDir = _inputController.queuedInput;
 
-        // walk down the snake and move each segment in the direction they are facing
-        for (SnakeSegment curr = _head; curr != null; curr = curr.next)
+        // walk down the snake
+        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
         {
-            currDir = curr.dir;
+            // move the segment and propagate it's direction to the next one
+            nextDir = curr.Move(nextDir);
+            // trail sprite update behind move update by an extra segment
+            // this is so that both neighbors of the updating segment have already moved
+            if (curr == _head) continue;
+            curr.next.UpdateSprite();
         }
+
+        // reset the interpolation on all of the sprites
+        Animate(0);
     }
 
-    void Grow()
+    void Animate(float t)
     {
-        // spawn the new segment in the correct location
-        Vector2 newPos = _tail.pos - _tail.dir;
-        SnakeSegment newSegment = CreateSegment(_tail, null, newPos, _tail.dir, _snakeLength);
-        // adjust the references to neighboring segments
-        _tail.prev = newSegment;
-        newSegment.next = _tail;
-        _tail = newSegment;
-        // track change to length
-        ++_snakeLength;
+        // walk down the snake
+        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
+        {
+            curr.Interpolate(t);
+        }
     }
 
     SnakeSegment CreateSegment(SnakeSegment next, SnakeSegment prev, Vector2 startPos, Vector2 startDir, int index)
@@ -89,4 +108,12 @@ public class Snake : MonoBehaviour
         return newSegment;
     }
 
+    [ContextMenu("log directions")]
+    void LogDir()
+    {
+        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
+        {
+            Debug.Log("segment " + curr.index + " has direction " + curr.dir);
+        }
+    }
 }

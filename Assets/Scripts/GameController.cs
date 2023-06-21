@@ -16,7 +16,7 @@ public class GameController : MonoBehaviour
     public int GetLevelX() { return levelX; }
     public int GetLevelY() { return levelY; }
     public bool isPlaying() { return Time.timeScale > 0; }
-    public void StartGame() { Time.timeScale = 1.0f; }
+    public void StartGame() { Time.timeScale = 1.0f; snake.Grow(); }
     public void PauseGame() { Time.timeScale = 0.0f; }
 
     void Awake()

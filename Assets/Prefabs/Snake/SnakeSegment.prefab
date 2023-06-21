@@ -129,10 +129,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ea8c27b61b308f4f845964f74fa0884, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _next: {fileID: 0}
-  _prev: {fileID: 0}
-  _index: 0
-  _segmentType: 0
+  next: {fileID: 0}
+  prev: {fileID: 0}
+  pos: {x: 0, y: 0}
+  dir: {x: 0, y: 0}
+  index: 0
+  segmentType: 0
   headSprite: {fileID: 21300000, guid: 4a40441d5726e944f97ad36bf3a66307, type: 3}
   bodySprite: {fileID: 21300000, guid: 3627efa04605cef40973c1803253cd9f, type: 3}
   turnSprite: {fileID: 21300000, guid: 52b1512258648a244935d5d0ff549982, type: 3}

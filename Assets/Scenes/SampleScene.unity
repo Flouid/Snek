@@ -297,13 +297,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelX: 19
   levelY: 15
-  startX: 3
-  startY: 7
-  foodX: 12
-  foodY: 7
   startLength: 2
-  startDir: 2
   fpsTarget: 60
+  startPos: {x: 4, y: 7}
+  startDir: {x: 1, y: 0}
+  foodPos: {x: 12, y: 7}
   snakeSpeed: 2
   snakePrefab: {fileID: 5939091014051108409, guid: a65c821e58798b14691c143eb07436bb, type: 3}
 --- !u!4 &534314205
