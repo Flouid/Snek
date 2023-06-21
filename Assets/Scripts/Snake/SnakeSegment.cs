@@ -13,10 +13,10 @@ public enum SegmentType
 
 public class SnakeSegment : MonoBehaviour
 {
-    public SnakeSegment _next, _prev;
-    public GridPosition _pos;
-    public int _index;
-    public SegmentType _segmentType;
+    public SnakeSegment next, prev;
+    public GridPosition pos;
+    public int index;
+    public SegmentType segmentType;
 
     [SerializeField] private Sprite headSprite, bodySprite, turnSprite, tailSprite;
     
@@ -26,10 +26,10 @@ public class SnakeSegment : MonoBehaviour
 
     public void Init(SnakeSegment next, SnakeSegment prev, GridPosition pos, int index)
     {
-        _next = next;
-        _prev = prev;
-        _pos = pos;
-        _index = index;
+        this.next = next;
+        this.prev = prev;
+        this.pos = pos;
+        this.index = index;
 
         _trans.position = new Vector3(pos.x, pos.y, 0.0f);
     }
@@ -39,19 +39,25 @@ public class SnakeSegment : MonoBehaviour
         UpdateSprite();
     }
 
+    // move the snake segment one unit in a given direction
+    void Move(Direction dir)
+    {
+        
+    }
+
     void UpdateSprite()
     {
         // no orphaned segments allowed
-        Assert.IsTrue(_next != null || _prev != null);
+        Assert.IsTrue(next != null || prev != null);
         
         // determine the correct segment type based on neighboring segments
-        if (_next == null) _segmentType = SegmentType.head;
-        else if (_prev == null) _segmentType = SegmentType.tail;
-        else if (GridPosition.InALine(_next._pos, _prev._pos)) _segmentType = SegmentType.body;
-        else _segmentType = SegmentType.turn;
+        if (next == null) segmentType = SegmentType.head;
+        else if (prev == null) segmentType = SegmentType.tail;
+        else if (GridPosition.InALine(next.pos, prev.pos)) segmentType = SegmentType.body;
+        else segmentType = SegmentType.turn;
 
         // set the sprite accordingly
-        switch(_segmentType)
+        switch(segmentType)
         {
             case (SegmentType.head): _spriteRenderer.sprite = headSprite; break;
             case (SegmentType.body): _spriteRenderer.sprite = bodySprite; break;

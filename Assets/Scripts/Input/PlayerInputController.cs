@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class PlayerInputController : MonoBehaviour
 {
-    public static string forwardKey = "w";
-    public static string leftKey = "a";
-    public static string downKey = "s";
-    public static string rightKey = "d";
+    public static string northKey = "w";
+    public static string westKey = "a";
+    public static string southKey = "s";
+    public static string eastKey = "d";
 
     public Direction queuedInput;
+    public Direction lastFrame;
 
     private GameController _game;
 
@@ -25,12 +26,15 @@ public class PlayerInputController : MonoBehaviour
 
     void Update()
     {
+        lastFrame = queuedInput;
         // if the game hasn't started and the player queues an input, start the game
-        if (!_game.CheckStarted() && queuedInput != Direction.None) _game.StartGame();
+        if (!_game.isPlaying() && queuedInput != Direction.None) _game.StartGame();
 
-        if (Input.GetKeyDown(forwardKey)) queuedInput = Direction.North;
-        if (Input.GetKeyDown(leftKey)) queuedInput = Direction.West;
-        if (Input.GetKeyDown(downKey)) queuedInput = Direction.South;
-        if (Input.GetKeyDown(rightKey)) queuedInput = Direction.East;
+        if (Input.GetKeyDown(northKey) && queuedInput != Direction.South) queuedInput = Direction.North;
+        if (Input.GetKeyDown(westKey) && queuedInput != Direction.East) queuedInput = Direction.West;
+        if (Input.GetKeyDown(southKey) && queuedInput != Direction.North) queuedInput = Direction.South;
+        if (Input.GetKeyDown(eastKey) && queuedInput != Direction.West) queuedInput = Direction.East;
+
+        if (lastFrame != queuedInput) Debug.Log("registered input: " + queuedInput);
     }
 }

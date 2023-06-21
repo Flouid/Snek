@@ -8,8 +8,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private int startLength;
     [SerializeField] private Direction startDir;
     [SerializeField] private int fpsTarget;
-    [SerializeField] private float tilesPerSecond;
-    [SerializeField] private bool hasStarted;
+    [SerializeField] private float snakeSpeed;
 
     [SerializeField] private Snake snakePrefab;
 
@@ -18,14 +17,14 @@ public class GameController : MonoBehaviour
 
     public int GetLevelX() { return levelX; }
     public int GetLevelY() { return levelY; }
-    public bool CheckStarted() { return hasStarted; }
-    public void StartGame() { hasStarted = true; }
+    public bool isPlaying() { return Time.timeScale > 0; }
+    public void StartGame() { Time.timeScale = 1.0f; }
+    public void PauseGame() { Time.timeScale = 0.0f; }
 
     void Awake()
     {
         Application.targetFrameRate = fpsTarget;
         grid = GameObject.FindGameObjectWithTag("GridManager").GetComponent<GridManager>();
-        hasStarted = false;
     }
 
     void Start()
@@ -33,6 +32,7 @@ public class GameController : MonoBehaviour
         var snakeObject = Instantiate(snakePrefab);
         snakeObject.name = "Snake";
         snake = snakeObject.GetComponent<Snake>();
-        snake.Init(new GridPosition(startX, startY, startDir), startLength);
+        snake.Init(new GridPosition(startX, startY, startDir), startLength, snakeSpeed);
+        PauseGame();
     }
 }

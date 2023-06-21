@@ -2,11 +2,11 @@ using UnityEngine;
 
 public enum Direction
 {
+    None,
     North,
     East,
     South,
-    West,
-    None                // default state of input, used to check for user starting game
+    West
 }
 
 public class GridPosition

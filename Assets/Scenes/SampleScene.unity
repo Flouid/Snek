@@ -302,10 +302,9 @@ MonoBehaviour:
   foodX: 12
   foodY: 7
   startLength: 2
-  startDir: 1
+  startDir: 2
   fpsTarget: 60
-  tilesPerSecond: 2
-  started: 0
+  snakeSpeed: 2
   snakePrefab: {fileID: 5939091014051108409, guid: a65c821e58798b14691c143eb07436bb, type: 3}
 --- !u!4 &534314205
 Transform:
