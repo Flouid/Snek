@@ -44,6 +44,7 @@ public class SnakeSegment : MonoBehaviour
         return lastDir;
     }
 
+    // update bookkeeping for type segment and associated sprite based on movement of neighbors
     public void UpdateSegment()
     {
         // no orphaned segments allowed
@@ -63,13 +64,32 @@ public class SnakeSegment : MonoBehaviour
         spriteController.SetSprite(segmentType);
     }
 
-    void Start()
+    // handle sprite translation for any frame partially between move steps
+    public Vector2 Translate(Vector2 direction, float t)
     {
-        UpdateSegment();
+        // translation
+        if (direction != dir) return dir;
+
+        Vector2 lerp;
+        // corner segments should be locked to the grid
+        if (segmentType == SegmentType.Turn) lerp = Vector2.zero;
+        // otherwise, scale the current direction by the lerp value to get a relative offset
+        else lerp = dir * t;
+        spriteController.TranslateSprite(lerp);
+
+        return dir;
     }
 
-    void Awake()
+    // snap sprite into rotation associated with new direction after move step
+    public Vector2 Rotate(Vector2 direction)
     {
-        _trans = GetComponent<Transform>();
+        float angle = Vector2.SignedAngle(dir, direction);
+        spriteController.SnapRotateSprite(angle);
+        return dir;
     }
+    
+    public void ResetSpritePos() { spriteController.ResetSpritePos(); }
+
+    void Start() { UpdateSegment(); }
+    void Awake() { _trans = GetComponent<Transform>(); }
 }

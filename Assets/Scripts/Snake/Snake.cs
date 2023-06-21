@@ -47,6 +47,19 @@ public class Snake : MonoBehaviour
         UpdateSegments();
     }
 
+    // factory method for segments
+    SnakeSegment CreateSegment(SnakeSegment next, SnakeSegment prev, Vector2 startPos, Vector2 startDir, int index)
+    {
+        // instantiate a new segment
+        var newSegmentObject = Instantiate(snakeSegmentPrefab);
+        // name it according to the length of the snake at creation time
+        newSegmentObject.name = $"Segment {index}";
+        // get the controller for the new segment, initialize it and return
+        SnakeSegment newSegment = newSegmentObject.GetComponent<SnakeSegment>();
+        newSegment.Init(null, null, startPos, startDir, index);
+        return newSegment;
+    }
+
     void Awake()
     {
         _game = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -66,6 +79,8 @@ public class Snake : MonoBehaviour
         // (0, 1] interval representing how far through the move step it currently is
         float moveProgress = _clock * _snakeSpeed;
 
+        AnimateSegments(moveProgress);
+
         // if the move has finished, reset the clock and perform a movestep
         if (moveProgress > 1.0f)
         {
@@ -84,24 +99,30 @@ public class Snake : MonoBehaviour
         }
         UpdateSegments();
         SampleInput();
+        RotateSegments();
     }
 
+    // walk down the snake and update all of the segments
     void UpdateSegments()
     {
-        // walk down the snake and update all of the segments
         for (SnakeSegment curr = _head; curr != null; curr = curr.prev) curr.UpdateSegment();
     }
 
-    // factory method for segments
-    SnakeSegment CreateSegment(SnakeSegment next, SnakeSegment prev, Vector2 startPos, Vector2 startDir, int index)
+    // walk down the snake and animate all of the segments
+    void AnimateSegments(float moveProgress)
     {
-        // instantiate a new segment
-        var newSegmentObject = Instantiate(snakeSegmentPrefab);
-        // name it according to the length of the snake at creation time
-        newSegmentObject.name = $"Segment {index}";
-        // get the controller for the new segment, initialize it and return
-        SnakeSegment newSegment = newSegmentObject.GetComponent<SnakeSegment>();
-        newSegment.Init(null, null, startPos, startDir, index);
-        return newSegment;
+        Vector2 tempDir = _currInput;
+        for (SnakeSegment curr = _head; curr != null; curr = curr.prev) tempDir = curr.Translate(tempDir, moveProgress);
+    }
+
+    // walk down the snake and rotate all of the segments
+    void RotateSegments()
+    {
+        Vector2 tempDir = _currInput;
+        for (SnakeSegment curr = _head; curr != null; curr = curr.prev) 
+        {
+            curr.ResetSpritePos();
+            tempDir = curr.Rotate(tempDir);
+        }
     }
 }
