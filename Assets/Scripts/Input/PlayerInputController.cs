@@ -9,8 +9,8 @@ public class PlayerInputController : MonoBehaviour
     public static string southKey = "s";
     public static string eastKey = "d";
 
-    public Direction queuedInput;
-    public Direction lastFrame;
+    public Vector2 queuedInput;
+    public Vector2 lastFrame;
 
     private GameController _game;
 
@@ -21,19 +21,19 @@ public class PlayerInputController : MonoBehaviour
 
     void Start()
     {
-        queuedInput = Direction.None;
+        queuedInput = Vector2.zero;
     }
 
     void Update()
     {
         lastFrame = queuedInput;
         // if the game hasn't started and the player queues an input, start the game
-        if (!_game.isPlaying() && queuedInput != Direction.None) _game.StartGame();
+        if (!_game.isPlaying() && queuedInput != Vector2.zero) _game.StartGame();
 
-        if (Input.GetKeyDown(northKey) && queuedInput != Direction.South) queuedInput = Direction.North;
-        if (Input.GetKeyDown(westKey) && queuedInput != Direction.East) queuedInput = Direction.West;
-        if (Input.GetKeyDown(southKey) && queuedInput != Direction.North) queuedInput = Direction.South;
-        if (Input.GetKeyDown(eastKey) && queuedInput != Direction.West) queuedInput = Direction.East;
+        if (Input.GetKeyDown(northKey) && queuedInput != Vector2.down) queuedInput = Vector2.up;
+        if (Input.GetKeyDown(westKey) && queuedInput != Vector2.right) queuedInput = Vector2.left;
+        if (Input.GetKeyDown(southKey) && queuedInput != Vector2.up) queuedInput = Vector2.down;
+        if (Input.GetKeyDown(eastKey) && queuedInput != Vector2.left) queuedInput = Vector2.right;
 
         if (lastFrame != queuedInput) Debug.Log("registered input: " + queuedInput);
     }

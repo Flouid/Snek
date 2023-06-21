@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] private int levelX, levelY, startX, startY, foodX, foodY;
-    [SerializeField] private int startLength;
-    [SerializeField] private Direction startDir;
-    [SerializeField] private int fpsTarget;
+    [SerializeField] private int levelX, levelY, startLength, fpsTarget;
+    [SerializeField] private Vector2 startPos, startDir, foodPos;
     [SerializeField] private float snakeSpeed;
 
     [SerializeField] private Snake snakePrefab;
@@ -32,7 +30,7 @@ public class GameController : MonoBehaviour
         var snakeObject = Instantiate(snakePrefab);
         snakeObject.name = "Snake";
         snake = snakeObject.GetComponent<Snake>();
-        snake.Init(new GridPosition(startX, startY, startDir), startLength, snakeSpeed);
+        snake.Init(startPos, startDir, startLength, snakeSpeed);
         PauseGame();
     }
 }

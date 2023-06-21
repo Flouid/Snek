@@ -14,7 +14,7 @@ public enum SegmentType
 public class SnakeSegment : MonoBehaviour
 {
     public SnakeSegment next, prev;
-    public GridPosition pos;
+    public Vector2 pos, dir;
     public int index;
     public SegmentType segmentType;
 
@@ -24,11 +24,12 @@ public class SnakeSegment : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private Transform _trans;
 
-    public void Init(SnakeSegment next, SnakeSegment prev, GridPosition pos, int index)
+    public void Init(SnakeSegment next, SnakeSegment prev, Vector2 pos, Vector2 dir, int index)
     {
         this.next = next;
         this.prev = prev;
         this.pos = pos;
+        this.dir = dir;
         this.index = index;
 
         _trans.position = new Vector3(pos.x, pos.y, 0.0f);
@@ -40,9 +41,9 @@ public class SnakeSegment : MonoBehaviour
     }
 
     // move the snake segment one unit in a given direction
-    void Move(Direction dir)
+    void Move(Vector2 dir)
     {
-        
+
     }
 
     void UpdateSprite()
@@ -53,7 +54,7 @@ public class SnakeSegment : MonoBehaviour
         // determine the correct segment type based on neighboring segments
         if (next == null) segmentType = SegmentType.head;
         else if (prev == null) segmentType = SegmentType.tail;
-        else if (GridPosition.InALine(next.pos, prev.pos)) segmentType = SegmentType.body;
+        else if (next.pos.x == prev.pos.x || next.pos.y == prev.pos.y) segmentType = SegmentType.body;
         else segmentType = SegmentType.turn;
 
         // set the sprite accordingly

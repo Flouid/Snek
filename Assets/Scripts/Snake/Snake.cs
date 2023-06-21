@@ -13,11 +13,11 @@ public class Snake : MonoBehaviour
     private int _snakeLength;
     private float _clock, _snakeSpeed;
 
-    public void Init(GridPosition startPos, int startLength, float snakeSpeed)
+    public void Init(Vector2 startPos, Vector2 startDir, int startLength, float snakeSpeed)
     {
         // assert that the snake can have at least a head and a tail
         Assert.IsTrue(startLength > 1);
-        _head = CreateSegment(null, null, startPos, _snakeLength);
+        _head = CreateSegment(null, null, startPos, startDir, _snakeLength);
         _tail = _head;
         _snakeLength = 1;
         
@@ -54,20 +54,21 @@ public class Snake : MonoBehaviour
         Debug.Log("executing move step");
 
         _clock = 0.0f;
-        _head.pos.dir = _inputController.queuedInput;
-        Direction currDir, nextDir;
+        _head.dir = _inputController.queuedInput;
+        Vector2 currDir, nextDir;
 
         // walk down the snake and move each segment in the direction they are facing
         for (SnakeSegment curr = _head; curr != null; curr = curr.next)
         {
-            currDir = curr.pos.dir;
+            currDir = curr.dir;
         }
     }
 
     void Grow()
     {
         // spawn the new segment in the correct location
-        SnakeSegment newSegment = CreateSegment(_tail, null, _tail.pos.Behind(), _snakeLength);
+        Vector2 newPos = _tail.pos - _tail.dir;
+        SnakeSegment newSegment = CreateSegment(_tail, null, newPos, _tail.dir, _snakeLength);
         // adjust the references to neighboring segments
         _tail.prev = newSegment;
         newSegment.next = _tail;
@@ -76,7 +77,7 @@ public class Snake : MonoBehaviour
         ++_snakeLength;
     }
 
-    SnakeSegment CreateSegment(SnakeSegment next, SnakeSegment prev, GridPosition startPos, int index)
+    SnakeSegment CreateSegment(SnakeSegment next, SnakeSegment prev, Vector2 startPos, Vector2 startDir, int index)
     {
         // instantiate a new segment
         var newSegmentObject = Instantiate(snakeSegmentPrefab);
@@ -84,7 +85,7 @@ public class Snake : MonoBehaviour
         newSegmentObject.name = $"Segment {index}";
         // get the controller for the new segment, initialize it and return
         SnakeSegment newSegment = newSegmentObject.GetComponent<SnakeSegment>();
-        newSegment.Init(null, null, startPos, index);
+        newSegment.Init(null, null, startPos, startDir, index);
         return newSegment;
     }
 
