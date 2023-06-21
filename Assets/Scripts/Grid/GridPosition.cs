@@ -5,7 +5,8 @@ public enum Direction
     North,
     East,
     South,
-    West
+    West,
+    None                // default state of input, used to check for user starting game
 }
 
 public class GridPosition

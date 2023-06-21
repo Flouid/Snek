@@ -8,6 +8,7 @@ public class Snake : MonoBehaviour
     [SerializeField] private SnakeSegment snakeSegmentPrefab;
 
     private SnakeSegment _head, _tail;
+    private PlayerInputController _inputController;
     private int snakeLength;
 
     public void Init(GridPosition startPos, int startLength)
@@ -20,6 +21,16 @@ public class Snake : MonoBehaviour
         
         // grow potentially several times depending on start config
         for (int segmentsLeft = startLength - 1; segmentsLeft > 0; --segmentsLeft) Grow();
+    }
+
+    public Direction SampleInput()
+    {
+        return _inputController.queuedInput;
+    }
+
+    void Start()
+    {
+        _inputController = GetComponent<PlayerInputController>();
     }
 
     void Grow()

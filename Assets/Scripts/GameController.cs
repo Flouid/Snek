@@ -4,30 +4,28 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] private int levelX, levelY;
-    [SerializeField] private int startX, startY, foodX, foodY;
+    [SerializeField] private int levelX, levelY, startX, startY, foodX, foodY;
     [SerializeField] private int startLength;
     [SerializeField] private Direction startDir;
     [SerializeField] private int fpsTarget;
     [SerializeField] private float tilesPerSecond;
-    [SerializeField] private bool started;
+    [SerializeField] private bool hasStarted;
 
     [SerializeField] private Snake snakePrefab;
 
     private GridManager grid;
     private Snake snake;
-    private float clock;                                        // move clock
-    private float moveProgress;                                 // (0, 1) - progress until next move step
 
     public int GetLevelX() { return levelX; }
     public int GetLevelY() { return levelY; }
+    public bool CheckStarted() { return hasStarted; }
+    public void StartGame() { hasStarted = true; }
 
     void Awake()
     {
         Application.targetFrameRate = fpsTarget;
         grid = GameObject.FindGameObjectWithTag("GridManager").GetComponent<GridManager>();
-        started = false;
-        moveProgress = 0.0f;
+        hasStarted = false;
     }
 
     void Start()
@@ -36,7 +34,5 @@ public class GameController : MonoBehaviour
         snakeObject.name = "Snake";
         snake = snakeObject.GetComponent<Snake>();
         snake.Init(new GridPosition(startX, startY, startDir), startLength);
-
-        clock = 0.0f;
     }
 }
