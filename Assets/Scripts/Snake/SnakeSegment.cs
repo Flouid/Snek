@@ -47,6 +47,21 @@ public class SnakeSegment : MonoBehaviour
         return lastDir;
     }
 
+    // adjust the sprite relative to the segment to smoothly interpolate 
+    // between grid positions given a direction and a lerp value and direction
+    // returns the direction the segment was facing before moving
+    public Vector2 Interpolate(Vector2 direction, float t)
+    {
+        // reset animation on corner sprites
+        if (segmentType == SegmentType.Turn) t = 0;
+        // clamp the interpolation to not move beyond a full unit
+        float terpValue = Mathf.Min(t, 1);
+        // scale direction by lerp value and adjust sprite transform relative to parent segment
+        Vector2 animAnchor = direction * t;
+        _spriteContainer.transform.localPosition = new Vector3(animAnchor.x, animAnchor.y, 0.0f);
+        return dir;
+    }
+
     public void UpdateSprite()
     {
         // no orphaned segments allowed
@@ -73,13 +88,6 @@ public class SnakeSegment : MonoBehaviour
             case (SegmentType.Turn): _spriteRenderer.sprite = turnSprite; return;
             case (SegmentType.Tail): _spriteRenderer.sprite = tailSprite; return;
         }
-    }
-
-    // adjust the sprite relative to the segment to smoothly interpolate between grid positions
-    public void Interpolate(float t)
-    {
-        Vector2 animAnchor = dir * t;
-        _spriteContainer.transform.localPosition = new Vector3(animAnchor.x, animAnchor.y, 0.0f);
     }
 
     void Start()

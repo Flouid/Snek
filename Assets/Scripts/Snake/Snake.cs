@@ -10,6 +10,7 @@ public class Snake : MonoBehaviour
     private SnakeSegment _head, _tail;
     private GameController _game;
     private PlayerInputController _inputController;
+    private Vector2 _currInput;
     private int _snakeLength;
     private float _clock, _snakeSpeed;
 
@@ -25,7 +26,10 @@ public class Snake : MonoBehaviour
         for (int segmentsLeft = startLength - 1; segmentsLeft > 0; --segmentsLeft) Grow();
 
         _snakeSpeed = snakeSpeed;
+        _currInput = Vector2.zero;
     }
+
+    public Vector2 CurrentInput() { return _currInput; }
 
     public void Grow()
     {
@@ -70,29 +74,34 @@ public class Snake : MonoBehaviour
     void MoveStep()
     {
         _clock = 0.0f;
-        Vector2 nextDir = _inputController.queuedInput;
+        Vector2 tempDir = _currInput;
 
         // walk down the snake
         for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
         {
             // move the segment and propagate it's direction to the next one
-            nextDir = curr.Move(nextDir);
+            tempDir = curr.Move(tempDir);
             // trail sprite update behind move update by an extra segment
             // this is so that both neighbors of the updating segment have already moved
+            // misses the head but that should never need to update anyway
             if (curr == _head) continue;
             curr.next.UpdateSprite();
         }
 
         // reset the interpolation on all of the sprites
         Animate(0);
+        // get the input for the next step 
+        _currInput = _inputController.queuedInput;
     }
 
     void Animate(float t)
     {
+        Vector2 tempDir = _currInput;
+
         // walk down the snake
         for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
         {
-            curr.Interpolate(t);
+            tempDir = curr.Interpolate(tempDir, t);
         }
     }
 
