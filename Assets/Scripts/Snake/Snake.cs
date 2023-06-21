@@ -43,6 +43,8 @@ public class Snake : MonoBehaviour
         _tail = newSegment;
         // track change to length
         ++_snakeLength;
+        // configuration has changed, so update all of the snake segments
+        UpdateSegments();
     }
 
     void Awake()
@@ -69,41 +71,25 @@ public class Snake : MonoBehaviour
         {
             _clock = 0.0f;
             MoveStep();
-            Animate(0);
         }
-        // otherwise, animate the sprites using the partial progress to interpolate
-        else Animate(moveProgress);
     }
 
     void MoveStep()
     {
-        Vector2 tempDir = _currInput;
-
-        // walk down the snake
+        // walk down the snake starting from the head, moving each segment
         for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
         {
             // move the segment and propagate it's direction to the next one
-            tempDir = curr.Move(tempDir);
-
-            // trail sprite update behind move update by an extra segment
-            // this is so that both neighbors of the updating segment have already moved
-            // misses the head but that should never need to update anyway
-            if (curr == _head) continue;
-            curr.next.UpdateSprite();
+            _currInput = curr.Move(_currInput);
         }
+        UpdateSegments();
         SampleInput();
     }
 
-    void Animate(float t)
+    void UpdateSegments()
     {
-        Vector2 tempDir = _currInput;
-
-        // walk down the snake
-        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
-        {
-            // animate the sprite and propagate it's direction to the next one
-            tempDir = curr.Interpolate(tempDir, t);
-        }
+        // walk down the snake and update all of the segments
+        for (SnakeSegment curr = _head; curr != null; curr = curr.prev) curr.UpdateSegment();
     }
 
     // factory method for segments
@@ -117,13 +103,5 @@ public class Snake : MonoBehaviour
         SnakeSegment newSegment = newSegmentObject.GetComponent<SnakeSegment>();
         newSegment.Init(null, null, startPos, startDir, index);
         return newSegment;
-    }
-
-    // takes two Vectr2s and returns the angle from 0 to 360 degrees
-    float ClampedAngle(Vector2 a, Vector2 b)
-    {
-        float ang = Vector2.SignedAngle(a, b);
-        if (ang < 0) ang += 360;
-        return ang;
     }
 }

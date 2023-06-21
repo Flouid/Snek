@@ -58,5 +58,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 145b1811b9767844dae40da4a6ade7a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  queuedInput: 0
-  lastFrame: 0
+  queuedInput: {x: 0, y: 0}

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4263847362485212802}
   - component: {fileID: 841233602527446193}
+  - component: {fileID: 4932438569537656693}
   m_Layer: 0
   m_Name: SnakeSprite
   m_TagString: Untagged
@@ -84,6 +85,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4932438569537656693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1146243265993419402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f97b4c2b24006141ac3a2a19938b8c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  head: {fileID: 21300000, guid: 4a40441d5726e944f97ad36bf3a66307, type: 3}
+  body: {fileID: 21300000, guid: 3627efa04605cef40973c1803253cd9f, type: 3}
+  tail: {fileID: 21300000, guid: a17d4a7f316966e458f444bd89ae51de, type: 3}
+  turn: {fileID: 21300000, guid: 52b1512258648a244935d5d0ff549982, type: 3}
 --- !u!1 &1775778425474095368
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,7 +152,4 @@ MonoBehaviour:
   dir: {x: 0, y: 0}
   index: 0
   segmentType: 0
-  headSprite: {fileID: 21300000, guid: 4a40441d5726e944f97ad36bf3a66307, type: 3}
-  bodySprite: {fileID: 21300000, guid: 3627efa04605cef40973c1803253cd9f, type: 3}
-  turnSprite: {fileID: 21300000, guid: 52b1512258648a244935d5d0ff549982, type: 3}
-  tailSprite: {fileID: 21300000, guid: a17d4a7f316966e458f444bd89ae51de, type: 3}
+  spriteController: {fileID: 4932438569537656693}

@@ -5,25 +5,21 @@ using UnityEngine.Assertions;
 
 public enum SegmentType
 {
-    None,
-    Head,
-    Body,
-    Turn,
-    Tail
+    None = 0,
+    Head = 1,
+    Body = 2,
+    Turn = 3,
+    Tail = 4
 };
 
 public class SnakeSegment : MonoBehaviour
 {
     public SnakeSegment next, prev;
     public Vector2 pos, dir;
-    public float angle;
     public int index;
     public SegmentType segmentType;
-
-    [SerializeField] private Sprite headSprite, bodySprite, turnSprite, tailSprite;
+    public SnakeSpriteController spriteController;
     
-    private GameObject _spriteContainer;
-    private SpriteRenderer _spriteRenderer;
     private Transform _trans;
 
     public void Init(SnakeSegment next, SnakeSegment prev, Vector2 pos, Vector2 dir, int index)
@@ -33,7 +29,6 @@ public class SnakeSegment : MonoBehaviour
         this.pos = pos;
         this.dir = dir;
         this.index = index;
-        angle = 0.0f;
 
         _trans.position = new Vector3(pos.x, pos.y, 0.0f);
     }
@@ -46,31 +41,10 @@ public class SnakeSegment : MonoBehaviour
         dir = direction;
         pos += direction;
         _trans.position = new Vector3(pos.x, pos.y, 0.0f);
-        angle += Vector2.SignedAngle(lastDir, direction);
-        Debug.Log("angle changed to " + angle);
         return lastDir;
     }
 
-    // adjust the sprite relative to the segment to smoothly interpolate 
-    // between grid positions given a direction and lerp value
-    // returns the direction the segment was facing before moving
-    public Vector2 Interpolate(Vector2 direction, float t)
-    {
-        // reset animation on corner sprites
-        if (segmentType == SegmentType.Turn) t = 0;
-        // scale direction by lerp value and adjust sprite transform relative to parent segment
-        Vector2 animAnchor = direction * t;
-        _spriteContainer.transform.localPosition = new Vector3(animAnchor.x, animAnchor.y, 0.0f);
-        // interpolate rotation if the segment is turning
-        if (direction != dir)
-        {
-            float theta = Vector2.SignedAngle(direction, dir) * t;
-            _spriteContainer.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, angle + theta);
-        }
-        return dir;
-    }
-
-    public void UpdateSprite()
+    public void UpdateSegment()
     {
         // no orphaned segments allowed
         Assert.IsTrue(next != null || prev != null);
@@ -83,30 +57,19 @@ public class SnakeSegment : MonoBehaviour
         else if (next.pos.x == prev.pos.x || next.pos.y == prev.pos.y) segmentType = SegmentType.Body;
         else segmentType = SegmentType.Turn;
 
-        // don't do anything if the type didn't change
+        // stop here if the segment type didn't actually change
         if (currType == segmentType) return;
-
         Debug.Log("changing segment " + index + " from " + currType + " to " + segmentType);
-
-        // set the sprite accordingly
-        switch(segmentType)
-        {
-            case (SegmentType.Head): _spriteRenderer.sprite = headSprite; return;
-            case (SegmentType.Body): _spriteRenderer.sprite = bodySprite; return;
-            case (SegmentType.Turn): _spriteRenderer.sprite = turnSprite; return;
-            case (SegmentType.Tail): _spriteRenderer.sprite = tailSprite; return;
-        }
+        spriteController.SetSprite(segmentType);
     }
 
     void Start()
     {
-        UpdateSprite();
+        UpdateSegment();
     }
 
     void Awake()
     {
         _trans = GetComponent<Transform>();
-        _spriteContainer = transform.GetChild(0).gameObject;
-        _spriteRenderer = _spriteContainer.GetComponent<SpriteRenderer>();
     }
 }

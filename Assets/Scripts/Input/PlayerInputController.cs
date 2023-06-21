@@ -27,12 +27,30 @@ public class PlayerInputController : MonoBehaviour
 
     void Update()
     {
-        // if the game hasn't started and the player queues an input, start the game
-        if (!_game.isPlaying() && queuedInput != Vector2.zero) _game.StartGame();
-        // change queued input based on user input and restrictions from the currently executing action
+        HandleGameStart();
+        HandleInput();
+        HandlePause();
+    }
+
+    void HandleGameStart()
+    {
+        if (!_game.isStarted() && queuedInput != Vector2.zero) _game.StartGame();
+    }
+
+    void HandleInput()
+    {
         if (Input.GetKeyDown(northKey) && _snake.CurrentInput() != Vector2.down) queuedInput = Vector2.up;
         if (Input.GetKeyDown(westKey) && _snake.CurrentInput() != Vector2.right) queuedInput = Vector2.left;
         if (Input.GetKeyDown(southKey) && _snake.CurrentInput() != Vector2.up) queuedInput = Vector2.down;
         if (Input.GetKeyDown(eastKey) && _snake.CurrentInput() != Vector2.left) queuedInput = Vector2.right;
+    }
+
+    void HandlePause()
+    {
+        if (!_game.isStarted()) return;                 // block pause/unpause until after game start 
+        if (!Input.GetKeyDown(KeyCode.Space)) return;   // pause toggle is held
+        
+        if (_game.isPaused()) _game.UnpauseGame();
+        else _game.PauseGame();
     }
 }
