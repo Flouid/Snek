@@ -72,11 +72,10 @@ public class SnakeSegment : MonoBehaviour
     // handle sprite animation for any frame partially between move steps
     public Vector2 Animate(Vector2 direction, float t)
     {
-        // don't animate corner segments
         if (segmentType == SegmentType.Turn) return dir;
 
-        if (direction == dir) TranslateSprite(t);
-        else RotateSprite(direction, t);
+        if (dir == direction) TranslateSprite(t); 
+        else RotateSprite(direction, t); 
 
         return dir;
     }
