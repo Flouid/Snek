@@ -8,19 +8,18 @@ public class CameraInit : MonoBehaviour
 
     private GameController _game;
     private Camera _cam;
-    private int _screenX, _screenY;
+    private Vector2 _levelSize;
 
     void Awake()
     {
         _game = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-        _screenX = _game.GetLevelX();
-        _screenY = _game.GetLevelY();
+        _levelSize = _game.GetLevelSize();
         _cam = GetComponent<Camera>();
     }
 
     void Start()
     {
-        _cam.transform.position = new Vector3((float)_screenX / 2 - 0.5f, (float)_screenY /2 - 0.5f, -10);
-        _cam.orthographicSize = (float)_screenY / 2 + padding;
+        _cam.transform.position = new Vector3(_levelSize.x / 2 - 0.5f, _levelSize.y /2 - 0.5f, -10);
+        _cam.orthographicSize = _levelSize.y / 2 + padding;
     }
 }

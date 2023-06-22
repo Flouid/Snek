@@ -48,6 +48,16 @@ public class Snake : MonoBehaviour
         UpdateSegments();
     }
 
+    // checks if a given position is currently occupied by the snake
+    public bool IsOccupied(Vector2 pos)
+    {
+        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
+        {
+            if (curr.pos == pos) return true;
+        }
+        return false;
+    }
+
     // factory method for segments
     SnakeSegment CreateSegment(SnakeSegment next, SnakeSegment prev, Vector2 startPos, Vector2 startDir, int index)
     {

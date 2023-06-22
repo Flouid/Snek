@@ -7,14 +7,13 @@ public class GridManager : MonoBehaviour
     [SerializeField] private Tile tilePrefab;
 
     private GameController _game;
-    private int _width, _height;
+    private Vector2 _levelSize;
     private Dictionary<Vector2, Tile> _tiles;
 
     void Awake()
     {
         _game = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-        _width = _game.GetLevelX();
-        _height = _game.GetLevelY();
+        _levelSize = _game.GetLevelSize();
     }
 
     void Start()
@@ -34,9 +33,11 @@ public class GridManager : MonoBehaviour
     void GenerateGrid()
     {
         _tiles = new Dictionary<Vector2, Tile>();
-        for (int x = 0; x < _width; ++x)
+        int width = (int) _levelSize.x;
+        int height = (int) _levelSize.y;
+        for (int x = 0; x < width; ++x)
         {
-            for (int y = 0; y < _height; ++y)
+            for (int y = 0; y < height; ++y)
             {
                 Tile spawnedTile = Instantiate(tilePrefab, new Vector3(x, y), Quaternion.identity);
                 spawnedTile.name = $"Tile {x}, {y}";

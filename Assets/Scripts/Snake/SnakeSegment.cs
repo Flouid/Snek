@@ -72,8 +72,6 @@ public class SnakeSegment : MonoBehaviour
         // stop here if the segment type didn't actually change
         if (currType == segmentType) return;
 
-        Debug.Log("changing segment " + index + " from " + currType + " to " + segmentType);
-
         spriteController.SetSprite(segmentType);
     }
 

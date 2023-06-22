@@ -34,7 +34,7 @@ public class PlayerInputController : MonoBehaviour
 
     void HandleGameStart()
     {
-        if (!_game.isStarted() && queuedInput != Vector2.zero) _game.StartGame();
+        if (!_game.IsStarted() && queuedInput != Vector2.zero) _game.StartGame();
     }
 
     void HandleInput()
@@ -47,10 +47,10 @@ public class PlayerInputController : MonoBehaviour
 
     void HandlePause()
     {
-        if (!_game.isStarted()) return;                 // block pause/unpause until after game start 
+        if (!_game.IsStarted()) return;                 // block pause/unpause until after game start 
         if (!Input.GetKeyDown(KeyCode.Space)) return;   // pause toggle is held
-        
-        if (_game.isPaused()) _game.UnpauseGame();
+
+        if (_game.IsPaused()) _game.UnpauseGame();
         else _game.PauseGame();
     }
 }

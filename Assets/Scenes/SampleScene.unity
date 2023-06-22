@@ -295,15 +295,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8be3df2539079a4ea322cf483f70149, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelX: 19
-  levelY: 15
-  startLength: 2
+  startLength: 3
   fpsTarget: 60
+  levelSize: {x: 19, y: 15}
   startPos: {x: 4, y: 7}
   startDir: {x: 1, y: 0}
   foodPos: {x: 12, y: 7}
-  snakeSpeed: 5
+  snakeSpeed: 6
   snakePrefab: {fileID: 5939091014051108409, guid: a65c821e58798b14691c143eb07436bb, type: 3}
+  applePrefab: {fileID: 6709924105574766357, guid: 35df10db97c849f4f8a3356af6896245, type: 3}
 --- !u!4 &534314205
 Transform:
   m_ObjectHideFlags: 0

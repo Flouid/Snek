@@ -4,21 +4,24 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] private int levelX, levelY, startLength, fpsTarget;
-    [SerializeField] private Vector2 startPos, startDir, foodPos;
+    [SerializeField] private int startLength, fpsTarget;
+    [SerializeField] private Vector2 levelSize, startPos, startDir, foodPos;
     [SerializeField] private float snakeSpeed;
 
     [SerializeField] private Snake snakePrefab;
+    [SerializeField] private Apple applePrefab;
 
     private GridManager grid;
     private Snake snake;
+    private Apple apple;
 
+    private int score;
     private bool gameStarted, gamePaused;
 
-    public int GetLevelX() { return levelX; }
-    public int GetLevelY() { return levelY; }
-    public bool isStarted() { return gameStarted; }
-    public bool isPaused() { return gamePaused; }
+    public Vector2 GetLevelSize() { return levelSize; }
+    public bool IsStarted() { return gameStarted; }
+    public bool IsPaused() { return gamePaused; }
+    public bool DoesSnakeOccupy(Vector2 pos) { return snake.IsOccupied(pos); }
 
     public void PauseGame() 
     {
@@ -37,9 +40,30 @@ public class GameController : MonoBehaviour
     public void StartGame() 
     { 
         Time.timeScale = 1.0f;
-        snake.Grow();
         snake.SampleInput();
         gameStarted = true;
+    }
+
+    public void CollectFood()
+    {
+        ++score;
+        snake.Grow();
+    }
+
+    private void CreateSnake()
+    {
+        var snakeObject = Instantiate(snakePrefab);
+        snakeObject.name = "Snake";
+        snake = snakeObject.GetComponent<Snake>();
+        snake.Init(startPos, startDir, startLength, snakeSpeed);
+    }
+
+    private void CreateApple()
+    {
+        var appleObject = Instantiate(applePrefab);
+        appleObject.name = "Apple";
+        apple = appleObject.GetComponent<Apple>();
+        apple.Init(foodPos);
     }
 
     void Awake()
@@ -50,12 +74,12 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
-        var snakeObject = Instantiate(snakePrefab);
-        snakeObject.name = "Snake";
-        snake = snakeObject.GetComponent<Snake>();
-        snake.Init(startPos, startDir, startLength, snakeSpeed);
+        CreateSnake();
+        CreateApple();
+
         Time.timeScale = 0.0f;
         gameStarted = false;
         gamePaused = false;
+        score = 0;
     }
 }
