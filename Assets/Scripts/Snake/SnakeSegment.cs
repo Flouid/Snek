@@ -34,13 +34,17 @@ public class SnakeSegment : MonoBehaviour
     }
 
     // move the snake segment one unit in a given direction
+    // rotates the segment to face to new direction
     // returns the direction the segment was facing before moving
     public Vector2 Move(Vector2 direction)
     {
         Vector2 lastDir = dir;
+        // translate
         dir = direction;
         pos += direction;
         _trans.position = new Vector3(pos.x, pos.y, 0.0f);
+        // rotate
+        _trans.Rotate(new Vector3(0.0f, 0.0f, Vector2.SignedAngle(lastDir, direction)));
         return lastDir;
     }
 
@@ -60,35 +64,36 @@ public class SnakeSegment : MonoBehaviour
 
         // stop here if the segment type didn't actually change
         if (currType == segmentType) return;
+
         Debug.Log("changing segment " + index + " from " + currType + " to " + segmentType);
         spriteController.SetSprite(segmentType);
     }
 
-    // handle sprite translation for any frame partially between move steps
-    public Vector2 Translate(Vector2 direction, float t)
+    // handle sprite animation for any frame partially between move steps
+    public Vector2 Animate(Vector2 direction, float t)
     {
-        // translation
-        if (direction != dir) return dir;
+        // don't animate corner segments
+        if (segmentType == SegmentType.Turn) return dir;
 
-        Vector2 lerp;
-        // corner segments should be locked to the grid
-        if (segmentType == SegmentType.Turn) lerp = Vector2.zero;
-        // otherwise, scale the current direction by the lerp value to get a relative offset
-        else lerp = dir * t;
-        spriteController.TranslateSprite(lerp);
+        if (direction == dir) TranslateSprite(t);
+        else RotateSprite(direction, t);
 
-        return dir;
-    }
-
-    // snap sprite into rotation associated with new direction after move step
-    public Vector2 Rotate(Vector2 direction)
-    {
-        float angle = Vector2.SignedAngle(dir, direction);
-        spriteController.SnapRotateSprite(angle);
         return dir;
     }
     
-    public void ResetSpritePos() { spriteController.ResetSpritePos(); }
+    public void ResetSprite() { spriteController.ResetSpriteTransform(); }
+
+    void RotateSprite(Vector2 direction, float t)
+    {
+        float angle = Vector2.SignedAngle(dir, direction) * t;
+        spriteController.RotateSprite(angle);
+    }
+
+    void TranslateSprite(float t) {
+        // instead of using the local transform, use the absolute as the frame of reference does not rotate
+        Vector2 lerp = new Vector2(_trans.position.x, _trans.position.y) + dir * t;
+        spriteController.TranslateSprite(lerp);
+    }
 
     void Start() { UpdateSegment(); }
     void Awake() { _trans = GetComponent<Transform>(); }

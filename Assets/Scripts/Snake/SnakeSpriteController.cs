@@ -6,7 +6,6 @@ public class SnakeSpriteController : MonoBehaviour
 {
     [SerializeField] private Sprite head, body, tail, turn;
 
-    private float _angle;
     private SpriteRenderer _spriteRenderer;
     private Transform _trans;
 
@@ -22,26 +21,27 @@ public class SnakeSpriteController : MonoBehaviour
         }
     }
 
-    public void ResetSpritePos() { _trans.localPosition = Vector3.zero; }
+    public void ResetSpriteTransform()
+    {
+        _trans.localPosition = Vector3.zero;
+        _trans.localRotation = Quaternion.identity;   
+    }
 
     // translate sprite to a given position relative to the parent segment
     public void TranslateSprite(Vector2 pos)
     {
-        _trans.localPosition = new Vector3(pos.x, pos.y, 0.0f);
+        _trans.position = new Vector3(pos.x, pos.y, 0.0f);
     }
 
-    // snap a sprite to the next rotation
-    public void SnapRotateSprite(float angle)
+    // rotate a sprite to a given angle relative to the set angle
+    public void RotateSprite(float angle)
     {
-        float angleSum = _angle + angle;
-        _angle = angleSum > 0 ? (angleSum % 360) : (angleSum + 360) % 360;
-        _trans.localRotation = Quaternion.Euler(0, 0, _angle);
+        _trans.localRotation = Quaternion.Euler(0.0f, 0.0f, angle);
     }
 
     void Awake()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _trans = GetComponent<Transform>();
-        _angle = 0.0f;
     }
 }
