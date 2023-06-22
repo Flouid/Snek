@@ -100,7 +100,8 @@ MonoBehaviour:
   head: {fileID: 21300000, guid: 4a40441d5726e944f97ad36bf3a66307, type: 3}
   body: {fileID: 21300000, guid: 3627efa04605cef40973c1803253cd9f, type: 3}
   tail: {fileID: 21300000, guid: a17d4a7f316966e458f444bd89ae51de, type: 3}
-  turn: {fileID: 21300000, guid: 52b1512258648a244935d5d0ff549982, type: 3}
+  turnRight: {fileID: 21300000, guid: 980eb12134379d74f9a5371be4e2b8d4, type: 3}
+  turnLeft: {fileID: 21300000, guid: 6306d3106477baf4c9cacbaccb759d95, type: 3}
 --- !u!1 &1775778425474095368
 GameObject:
   m_ObjectHideFlags: 0

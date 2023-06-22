@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SnakeSpriteController : MonoBehaviour
 {
-    [SerializeField] private Sprite head, body, tail, turn;
+    [SerializeField] private Sprite head, body, tail, turnRight, turnLeft;
 
     private SpriteRenderer _spriteRenderer;
     private Transform _trans;
@@ -16,7 +16,8 @@ public class SnakeSpriteController : MonoBehaviour
             case (SegmentType.Head): _spriteRenderer.sprite = head; return;
             case (SegmentType.Body): _spriteRenderer.sprite = body; return;
             case (SegmentType.Tail): _spriteRenderer.sprite = tail; return;
-            case (SegmentType.Turn): _spriteRenderer.sprite = turn; return;
+            case (SegmentType.TurnRight): _spriteRenderer.sprite = turnRight; return;
+            case (SegmentType.TurnLeft): _spriteRenderer.sprite = turnLeft; return;
             case (SegmentType.None): Debug.Log("attempted to set no sprite, doing nothing"); return;
         }
     }

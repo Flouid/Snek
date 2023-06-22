@@ -8,8 +8,9 @@ public enum SegmentType
     None = 0,
     Head = 1,
     Body = 2,
-    Turn = 3,
-    Tail = 4
+    TurnRight = 3,
+    TurnLeft = 4,
+    Tail = 5
 };
 
 public class SnakeSegment : MonoBehaviour
@@ -44,7 +45,8 @@ public class SnakeSegment : MonoBehaviour
         pos += direction;
         _trans.position = new Vector3(pos.x, pos.y, 0.0f);
         // rotate
-        _trans.Rotate(new Vector3(0.0f, 0.0f, Vector2.SignedAngle(lastDir, direction)));
+        float angle = Vector2.SignedAngle(lastDir, direction);
+        _trans.Rotate(new Vector3(0.0f, 0.0f, angle));
         return lastDir;
     }
 
@@ -59,20 +61,26 @@ public class SnakeSegment : MonoBehaviour
         // determine the correct segment type based on neighboring segments
         if (next == null) segmentType = SegmentType.Head;
         else if (prev == null) segmentType = SegmentType.Tail;
-        else if (next.pos.x == prev.pos.x || next.pos.y == prev.pos.y) segmentType = SegmentType.Body;
-        else segmentType = SegmentType.Turn;
+        else
+        {
+            float angle = RelativeAngle(prev.pos, next.pos, pos);
+            if (angle == -90) segmentType = SegmentType.TurnLeft;
+            else if (angle == 90) segmentType = SegmentType.TurnRight;
+            else segmentType = SegmentType.Body;
+        }
 
         // stop here if the segment type didn't actually change
         if (currType == segmentType) return;
 
         Debug.Log("changing segment " + index + " from " + currType + " to " + segmentType);
+
         spriteController.SetSprite(segmentType);
     }
 
     // handle sprite animation for any frame partially between move steps
     public Vector2 Animate(Vector2 direction, float t)
     {
-        if (segmentType == SegmentType.Turn) return dir;
+        if (segmentType == SegmentType.TurnRight || segmentType == SegmentType.TurnLeft) return dir;
 
         if (dir == direction) TranslateSprite(t); 
         else RotateSprite(direction, t); 
@@ -93,6 +101,9 @@ public class SnakeSegment : MonoBehaviour
         Vector2 lerp = new Vector2(_trans.position.x, _trans.position.y) + dir * t;
         spriteController.TranslateSprite(lerp);
     }
+    
+    // get the relative angle between two vectors about an origin
+    float RelativeAngle(Vector2 a, Vector2 b, Vector2 origin) { return Vector2.SignedAngle(a - origin, b - origin); }
 
     void Start() { UpdateSegment(); }
     void Awake() { _trans = GetComponent<Transform>(); }
