@@ -63,7 +63,7 @@ public class SnakeSegment : MonoBehaviour
         else if (prev == null) segmentType = SegmentType.Tail;
         else
         {
-            float angle = RelativeAngle(prev.pos, next.pos, pos);
+            float angle = Vector2.SignedAngle(prev.pos - pos, next.pos - pos);
             if (angle == -90) segmentType = SegmentType.TurnLeft;
             else if (angle == 90) segmentType = SegmentType.TurnRight;
             else segmentType = SegmentType.Body;
@@ -101,9 +101,6 @@ public class SnakeSegment : MonoBehaviour
         Vector2 lerp = new Vector2(_trans.position.x, _trans.position.y) + dir * t;
         spriteController.TranslateSprite(lerp);
     }
-    
-    // get the relative angle between two vectors about an origin
-    float RelativeAngle(Vector2 a, Vector2 b, Vector2 origin) { return Vector2.SignedAngle(a - origin, b - origin); }
 
     void Start() { UpdateSegment(); }
     void Awake() { _trans = GetComponent<Transform>(); }
