@@ -21,7 +21,10 @@ public class SnakeSegment : MonoBehaviour
     public SegmentType segmentType;
     public SnakeSpriteController spriteController;
     
-    private Transform _trans;
+    private GameController _game;
+    private Rigidbody2D _rb;
+
+    // ---------------------------- initializer ---------------------------------------
 
     public void Init(SnakeSegment next, SnakeSegment prev, Vector2 pos, Vector2 dir, int index)
     {
@@ -31,8 +34,10 @@ public class SnakeSegment : MonoBehaviour
         this.dir = dir;
         this.index = index;
 
-        _trans.position = new Vector3(pos.x, pos.y, 0.0f);
+        MoveAndRotate(pos, dir);
     }
+
+    // ------------------------ main update methods -------------------------------------
 
     // move the snake segment one unit in a given direction
     // rotates the segment to face to new direction
@@ -40,13 +45,10 @@ public class SnakeSegment : MonoBehaviour
     public Vector2 Move(Vector2 direction)
     {
         Vector2 lastDir = dir;
-        // translate
         dir = direction;
         pos += direction;
-        _trans.position = new Vector3(pos.x, pos.y, 0.0f);
-        // rotate
-        float angle = Vector2.SignedAngle(lastDir, direction);
-        _trans.Rotate(new Vector3(0.0f, 0.0f, angle));
+        if (OutOfBounds(pos)) _game.EndGame();
+        MoveAndRotate(pos, dir);
         return lastDir;
     }
 
@@ -75,31 +77,76 @@ public class SnakeSegment : MonoBehaviour
         spriteController.SetSprite(segmentType);
     }
 
+    private void MoveAndRotate(Vector2 pos, Vector2 dir)
+    {
+        // rotation is relative to the x-axis
+        float angle = Vector2.SignedAngle(Vector2.right, dir);
+        _rb.MoveRotation(Quaternion.Euler(0.0f, 0.0f, angle));
+        _rb.MovePosition(new Vector3(pos.x, pos.y, 0.0f));
+    }
+
+    // ------------------------ sprite management ------------------------------------------
+
     // handle sprite animation for any frame partially between move steps
     public Vector2 Animate(Vector2 direction, float t)
     {
-        if (segmentType == SegmentType.TurnRight || segmentType == SegmentType.TurnLeft) return dir;
+        // do not animate corners
+        if (IsCorner()) return dir;
+        // clamp animation for body segments next to corners
+        if (IsBody() && (next.IsCorner() || prev.IsCorner())) t = Mathf.Min(0.5f, t);
 
-        if (dir == direction) TranslateSprite(t); 
-        else RotateSprite(direction, t); 
+        // only translate if direction didn't change
+        if (direction == dir) TranslateSprite(t);
+        else RotateSprite(direction, t);
 
         return dir;
     }
     
     public void ResetSprite() { spriteController.ResetSpriteTransform(); }
 
-    void RotateSprite(Vector2 direction, float t)
+    private void RotateSprite(Vector2 direction, float t)
     {
+        // angle is relative to the direction of the segment
         float angle = Vector2.SignedAngle(dir, direction) * t;
         spriteController.RotateSprite(angle);
     }
 
-    void TranslateSprite(float t) {
-        // instead of using the local transform, use the absolute as the frame of reference does not rotate
-        Vector2 lerp = new Vector2(_trans.position.x, _trans.position.y) + dir * t;
+    private void TranslateSprite(float t) {
+        // position is in absolute terms, a relative position would rotate with the segment
+        Vector2 lerp = pos + dir * t;
         spriteController.TranslateSprite(lerp);
     }
 
+    // ------------------------ lifecycle methods ----------------------------
+
     void Start() { UpdateSegment(); }
-    void Awake() { _trans = GetComponent<Transform>(); }
+
+    void Awake()
+    { 
+        _game = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+        _rb = GetComponent<Rigidbody2D>();
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        // make sure the game isn't paused
+        if (Time.timeScale == 0) return; 
+        if (collider.CompareTag("Player"))
+        {
+            Debug.Log("snake collided, ending game");
+
+            _game.EndGame();
+        }
+    }
+
+    // -------------------------- helpers -----------------------
+
+    private bool IsCorner() { return segmentType == SegmentType.TurnRight || segmentType == SegmentType.TurnLeft; }
+    private bool IsBody() { return segmentType == SegmentType.Body; }
+
+    private bool OutOfBounds(Vector2 pos)
+    {
+        Vector2 levelSize = _game.GetLevelSize();
+        return (pos.x < 0 || pos.x >= levelSize.x || pos.y < 0 || pos.y >= levelSize.y);
+    }
 }

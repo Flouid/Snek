@@ -16,11 +16,12 @@ public class GameController : MonoBehaviour
     private Apple apple;
 
     private int score;
-    private bool gameStarted, gamePaused;
+    private bool gameStarted, gamePaused, gameEnded;
 
     public Vector2 GetLevelSize() { return levelSize; }
     public bool IsStarted() { return gameStarted; }
     public bool IsPaused() { return gamePaused; }
+    public bool IsEnded() { return gameEnded; }
     public bool DoesSnakeOccupy(Vector2 pos) { return snake.IsOccupied(pos); }
 
     public void PauseGame() 
@@ -42,6 +43,12 @@ public class GameController : MonoBehaviour
         Time.timeScale = 1.0f;
         snake.SampleInput();
         gameStarted = true;
+    }
+
+    public void EndGame()
+    {
+        Time.timeScale = 0.0f;
+        gameEnded = true;
     }
 
     public void CollectFood()
@@ -80,6 +87,7 @@ public class GameController : MonoBehaviour
         Time.timeScale = 0.0f;
         gameStarted = false;
         gamePaused = false;
+        gameEnded = false;
         score = 0;
     }
 }

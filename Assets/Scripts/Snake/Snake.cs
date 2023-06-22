@@ -14,6 +14,8 @@ public class Snake : MonoBehaviour
     private int _snakeLength;
     private float _clock, _snakeSpeed;
 
+    // ---------------- initializers ----------------------------
+
     public void Init(Vector2 startPos, Vector2 startDir, int startLength, float snakeSpeed)
     {
         // assert that the snake has at least a head and a tail
@@ -28,9 +30,6 @@ public class Snake : MonoBehaviour
         _snakeSpeed = snakeSpeed;
         _currInput = Vector2.zero;
     }
-
-    public Vector2 CurrentInput() { return _currInput; }
-    public void SampleInput() { _currInput = _inputController.queuedInput; }
 
     // grow the snake by adding one new segment at the end
     public void Grow()
@@ -48,16 +47,6 @@ public class Snake : MonoBehaviour
         UpdateSegments();
     }
 
-    // checks if a given position is currently occupied by the snake
-    public bool IsOccupied(Vector2 pos)
-    {
-        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
-        {
-            if (curr.pos == pos) return true;
-        }
-        return false;
-    }
-
     // factory method for segments
     SnakeSegment CreateSegment(SnakeSegment next, SnakeSegment prev, Vector2 startPos, Vector2 startDir, int index)
     {
@@ -70,6 +59,56 @@ public class Snake : MonoBehaviour
         newSegment.Init(null, null, startPos, startDir, index);
         return newSegment;
     }
+
+    // ------------------------ public helpers ---------------------------
+
+    public Vector2 CurrentInput() { return _currInput; }
+    public void SampleInput() { _currInput = _inputController.queuedInput; }
+
+    // checks if a given position is currently occupied by the snake
+    public bool IsOccupied(Vector2 pos)
+    {
+        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
+        {
+            if (curr.pos == pos) return true;
+        }
+        return false;
+    }
+
+    // -------------------------- main update methods -----------------------------
+
+    // perform one in-world move step, rotating and translating everything by a whole unit
+    void MoveStep()
+    {
+        // walk down the snake starting from the head, moving each segment
+        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
+        {
+            // move the segment and propagate it's direction to the next one
+            _currInput = curr.Move(_currInput);
+        }
+        UpdateSegments();
+        SampleInput();
+    }
+
+    void UpdateSegments()
+    {
+        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
+        {
+            curr.UpdateSegment();
+            curr.ResetSprite();
+        }
+    }
+
+    void AnimateSegments(float moveProgress)
+    {
+        Vector2 tempDir = _currInput;
+        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
+        {
+            tempDir = curr.Animate(tempDir, moveProgress);
+        }
+    }
+
+    // --------------------- lifecycle methods --------------------------------------
 
     void Awake()
     {
@@ -85,48 +124,22 @@ public class Snake : MonoBehaviour
     void Update()
     {
         _clock += Time.deltaTime;
-        // duration between move steps, one unit at a time
-        float timeToMoveStep = 1 / _snakeSpeed;
         // (0, 1] interval representing how far through the move step it currently is
-        float moveProgress = _clock * _snakeSpeed;
+        float moveProgress = Mathf.Min(1, _clock * _snakeSpeed);
         // animate the sprites along each segment according to the move progress
         AnimateSegments(moveProgress);
+    }
 
+    void FixedUpdate()
+    {
+        // duration between move steps, one unit at a time
+        float timeToMoveStep = 1 / _snakeSpeed;
         // if the move has finished, reset the clock and perform a movestep
-        if (moveProgress > 1.0f)
+        if (_clock > timeToMoveStep)
         {
             _clock = 0.0f;
             MoveStep();
         }
     }
 
-    // perform one in-world move step, rotating and translating everything by a whole unit
-    void MoveStep()
-    {
-        // walk down the snake starting from the head, moving each segment
-        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
-        {
-            // move the segment and propagate it's direction to the next one
-            _currInput = curr.Move(_currInput);
-        }
-        UpdateSegments();
-        SampleInput();
-    }
-
-    // walk down the snake and update all of the segments
-    void UpdateSegments()
-    {
-        for (SnakeSegment curr = _head; curr != null; curr = curr.prev)
-        {
-            curr.UpdateSegment();
-            curr.ResetSprite();
-        }
-    }
-
-    // walk down the snake and animate all of the segments
-    void AnimateSegments(float moveProgress)
-    {
-        Vector2 tempDir = _currInput;
-        for (SnakeSegment curr = _head; curr != null; curr = curr.prev) tempDir = curr.Animate(tempDir, moveProgress);
-    }
 }

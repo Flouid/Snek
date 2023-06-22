@@ -27,6 +27,8 @@ public class PlayerInputController : MonoBehaviour
 
     void Update()
     {
+        if (_game.IsEnded()) return;
+        
         HandleGameStart();
         HandleInput();
         HandlePause();

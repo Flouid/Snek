@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Apple : MonoBehaviour
 {
-    public float minRespawnDistance;
+    public int maxIterations;
 
     private GameController _game;
     private Transform _trans;
@@ -17,21 +17,22 @@ public class Apple : MonoBehaviour
     void Respawn()
     {
         Vector2 levelSize = _game.GetLevelSize();
-        Vector2 oldPos = new Vector2(_trans.position.x, _trans.position.y);
-        Vector2 pos;
-
-        // look for positions to spawn the apple until a valid one is found
-        while (true)
-        {
-            int x = UnityEngine.Random.Range(0, (int)levelSize.x);
-            int y = UnityEngine.Random.Range(0, (int)levelSize.y);
-            pos = new Vector2(x, y);
-            if (!_game.DoesSnakeOccupy(pos) && Vector2.Distance(oldPos, pos) > minRespawnDistance) break;
-        }
-
-        Debug.Log("respawning apple at " + pos);
-
+        Vector2 pos = FindRandomPos(levelSize);
         Move(pos);
+    }
+
+    private Vector2 FindRandomPos(Vector2 bounds)
+    {
+        Vector2 pos;
+        for (int i = 0; i < maxIterations; ++i)
+        {
+            int x = UnityEngine.Random.Range(0, (int)bounds.x);
+            int y = UnityEngine.Random.Range(0, (int)bounds.y);
+            pos = new Vector2(x, y);
+            if (!_game.DoesSnakeOccupy(pos)) return pos;
+        }
+        Debug.Log("failed to find a new position for the apple, using origin");
+        return Vector2.zero;
     }
 
     void Move(Vector2 pos)
